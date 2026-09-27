@@ -1,8 +1,8 @@
-# 🎰 Bandit – Erkunden gegen Ausnutzen
+# 🎰 Bandit – Exploration gegen Exploitation
 
 **[→ Demo live ausprobieren](https://sebastianhanisch-bandit-demo.streamlit.app/)**
 
-Erstes Stück (Wurzel A) der **Reinforcement-Learning-Linie** der "Konzepte"-Reihe im Portfolio von [Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning. Ein Lagerroboter muss sich in jeder Runde für eine von **K Ladestationen** mit unbekannter, aber fester Erfolgswahrscheinlichkeit entscheiden – der einfachste Fall von Reinforcement Learning: kein Zustand, keine Übergänge, nur die Frage, wie man aus wiederholtem Ausprobieren lernt. Fünf Verfahren im Vergleich: zufällig, gierig, Epsilon-gierig, **UCB1** und **Thompson Sampling**.
+Erstes Stück (Wurzel A) der **Reinforcement-Learning-Linie** der "Konzepte"-Reihe im Portfolio von [Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning. Ein Lagerroboter muss sich in jeder Runde für eine von **K Ladestationen** mit unbekannter, aber fester Erfolgswahrscheinlichkeit entscheiden – der einfachste Fall von Reinforcement Learning: kein State, keine Übergänge, nur die Frage, wie man aus wiederholtem Ausprobieren lernt. Fünf Verfahren im Vergleich: zufällig, gierig, Epsilon-gierig, **UCB1** und **Thompson Sampling**.
 
 ## Kernfrage
 
@@ -10,7 +10,7 @@ Erstes Stück (Wurzel A) der **Reinforcement-Learning-Linie** der "Konzepte"-Rei
 
 ## Modell
 
-- **Vehikel** (`bd_bandit.py`): $K$ Ladestationen, Station $k$ liefert mit fester, unbekannter Wahrscheinlichkeit $\theta_k$ eine kurze Ladezeit (Belohnung 1), sonst eine lange (0). Die beste Station liegt um einen wählbaren **Abstand** über dem Maximum der übrigen $K-1$ Stationen (die selbst um eine Grundrate mit wählbarer Streuung schwanken) – so ist die Schwierigkeit des Problems ein eigener, unabhängig einstellbarer Regler.
+- **Vehikel** (`bd_bandit.py`): $K$ Ladestationen, Station $k$ liefert mit fester, unbekannter Wahrscheinlichkeit $\theta_k$ eine kurze Ladezeit (Reward 1), sonst eine lange (0). Die beste Station liegt um einen wählbaren **Abstand** über dem Maximum der übrigen $K-1$ Stationen (die selbst um eine Grundrate mit wählbarer Streuung schwanken) – so ist die Schwierigkeit des Problems ein eigener, unabhängig einstellbarer Regler.
 - **Regret** (`bd_algorithms.py`): $R(T) = \sum_{t=1}^T (\theta^* - \theta_{a_t})$ – der Erwartungswert des entgangenen Ertrags (Auer et al. 2002), nicht der verrauschte tatsächliche.
 - **Fünf Verfahren:** Zufällig, Gierig ($\arg\max$ des Mittelwerts, nie gezogene Stationen zählen als $+\infty$), Epsilon-gierig (Mischung), **UCB1** (Mittelwert + Vertrauensbonus $\sqrt{2\ln t/n_k}$, Auer, Cesa-Bianchi & Fischer 2002), **Thompson Sampling** (Beta-Posterior je Station, Beta(1,1)-Vorwissen, Thompson 1933).
 
@@ -38,9 +38,9 @@ Die Preset-Zeilen sind **Einzelläufe** (Seed 3, 1000 Runden); belastbar sind di
 | Annahme | Was passiert, wenn sie verletzt ist | Wer setzt an |
 |---|---|---|
 | **Die Erfolgswahrscheinlichkeit ist fest** | Ändert sich eine Station mit der Zeit, lernen alle fünf Verfahren einen veralteten Wert; UCB1/Thompson haben kein Vergessen eingebaut. | Gleitendes Fenster, diskontierte Zähler, gleitender UCB |
-| **Keine Folgen für künftige Runden** | Sobald eine Wahl den Zustand verändert, ist es kein Bandit mehr, sondern ein Markov-Entscheidungsprozess. | Wert- und Politikiteration (Stück 2) |
+| **Keine Folgen für künftige Runden** | Sobald eine Wahl den State verändert, ist es kein Bandit mehr, sondern ein Markov-Entscheidungsprozess. | Value Iteration und Policy Iteration (Stück 2) |
 | **Ein Entscheider, keine Gegenspieler** | Bei mehreren sich gegenseitig beeinflussenden Entscheidern ist die Umgebung nicht mehr stationär – das ist die Situation von `noregret-demo` (Spieltheorie-Linie), nicht diese hier. | Adversariales Online-Lernen (Hedge/EXP3) |
-| **Bernoulli-Belohnung (0 oder 1)** | Bei kontinuierlichen Belohnungen ändern sich UCB1s Bonusformel und Thompson Samplings Beta-Verteilung. | Gauß'sches UCB, Gauß'sche Thompson-Variante |
+| **Bernoulli-Reward (0 oder 1)** | Bei kontinuierlichen Rewards ändern sich UCB1s Bonusformel und Thompson Samplings Beta-Verteilung. | Gauß'sches UCB, Gauß'sche Thompson-Variante |
 | **Gierig hat kein Sicherheitsnetz** | Ein einzelner unglücklicher erster Zug kann eine schlechte Station für immer festschreiben – gemessen: 40 % der Seeds bei Epsilon 0. | Abklingendes Epsilon, optimistische Startwerte |
 | **Erzeugte Stationen, feste Seeds** | Die Zahlen gelten für dieses Vehikel; reale Auswahlprobleme haben oft mehr Stationen mit ähnlicheren Werten. | – |
 
@@ -66,7 +66,7 @@ Die Preset-Zeilen sind **Einzelläufe** (Seed 3, 1000 Runden); belastbar sind di
 - **Kontextuelle Bandits** (Merkmale je Runde, z. B. Tageszeit) – ein natürlicher nächster Schritt, aber kein eigenes Stück dieser Linie.
 - **Nicht-stationäre Banditen** (sich ändernde Erfolgswahrscheinlichkeiten, gleitendes UCB) – die Annahme "fest" wird bewusst nicht verletzt, um Erkunden-gegen-Ausnutzen isoliert zu zeigen.
 - **Adversariale Bandits** (EXP3, Hedge) – das ist die Situation von `noregret-demo` (Spieltheorie-Linie): mehrere Entscheider, die sich gegenseitig beeinflussen, keine stationäre Umgebung.
-- **Gauß'sche statt Bernoulli-Belohnung.**
+- **Gauß'scher statt Bernoulli-Reward.**
 
 ## Lokal ausführen
 

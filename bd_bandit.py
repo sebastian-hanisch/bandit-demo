@@ -1,5 +1,5 @@
 """Das Vehikel: K Ladestationen mit unbekannter, aber fester Erfolgswahrscheinlichkeit. Der Roboter wählt in jeder Runde eine Station; sie liefert mit Wahrscheinlichkeit theta_k eine kurze Ladezeit
-(Belohnung 1) oder eine lange (Belohnung 0) - ein Bernoulli-Banditenproblem. Keine Folgen für künftige Runden (nicht-assoziativ): das ist der einfachste Fall, bevor in den Nachfolgern ein Zustand dazukommt."""
+(Reward 1) oder eine lange (Reward 0) - ein Bernoulli-Banditenproblem. Keine Folgen für künftige Runden (nicht-assoziativ): das ist der einfachste Fall, bevor in den Nachfolgern ein State dazukommt."""
 
 from dataclasses import dataclass
 

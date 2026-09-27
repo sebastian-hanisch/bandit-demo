@@ -36,7 +36,7 @@ class Analysis:
     settings: Settings
     bandit: B.Bandit
     arms: dict            # Verfahren -> (T,) gezogene Stationen
-    rewards: dict          # Verfahren -> (T,) Belohnungen
+    rewards: dict          # Verfahren -> (T,) Rewards
     regret: dict           # Verfahren -> (T,) Pseudo-Regret je Runde
     cum_regret: dict       # Verfahren -> (T,) kumuliertes Regret
     best_share_window: dict  # Verfahren -> Anteil der Ziehungen der besten Station in den letzten WINDOW-Runden

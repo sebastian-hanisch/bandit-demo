@@ -38,7 +38,7 @@ def choose(values, rng):
 
 
 def run(method, bandit, T, seed, eps=0.1):
-    """T Runden des gewählten Verfahrens auf `bandit`. Rückgabe: gezogene Stationen (T,), Belohnungen (T,)."""
+    """T Runden des gewählten Verfahrens auf `bandit`. Rückgabe: gezogene Stationen (T,), Rewards (T,)."""
     rng = np.random.default_rng(seed)
     K = bandit.K
     counts = np.zeros(K, dtype=int)

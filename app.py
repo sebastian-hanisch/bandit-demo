@@ -1,8 +1,8 @@
-"""Bandit - Erkunden gegen Ausnutzen - interaktive Konzept-Demo
+"""Bandit - Exploration gegen Exploitation - interaktive Konzept-Demo
 Sebastian Hanisch - Operations Research und Machine Learning
 
 Erstes Stück (Wurzel A) der Reinforcement-Learning-Linie der "Konzepte"-Reihe: ein Lagerroboter muss sich in jeder Runde für eine von K Ladestationen mit unbekannter, aber fester
-Erfolgswahrscheinlichkeit entscheiden - der einfachste Fall von Verstärkungslernen, ganz ohne Zustand. Fünf Verfahren im Vergleich: zufällig, gierig, Epsilon-gierig, UCB1 und Thompson Sampling.
+Erfolgswahrscheinlichkeit entscheiden - der einfachste Fall von Verstärkungslernen, ganz ohne State. Fünf Verfahren im Vergleich: zufällig, gierig, Epsilon-gierig, UCB1 und Thompson Sampling.
 
 Lauffähig mit: streamlit run app.py
 """
@@ -46,26 +46,26 @@ def _gap(levels, seeds):
     return gap_experiment(levels=levels, seeds=seeds)
 
 
-st.title("🎰 Bandit – Erkunden gegen Ausnutzen")
+st.title("🎰 Bandit – Exploration gegen Exploitation")
 st.markdown(
     """
 Ein Lagerroboter muss sich in jeder Runde für eine von **K Ladestationen** entscheiden, deren Erfolgswahrscheinlichkeit (kurze statt lange Ladezeit) er nicht kennt - fest, aber unbekannt, und ohne Folgen für künftige Runden.
-Das ist der einfachste Fall von **Reinforcement Learning**: kein Zustand, keine Übergänge, nur die Frage, wie man aus wiederholtem Ausprobieren lernt. Wer nur **ausnutzt** (die bisher beste Station immer wieder wählt), riskiert, sich auf eine
+Das ist der einfachste Fall von **Reinforcement Learning**: kein State, keine Übergänge, nur die Frage, wie man aus wiederholtem Ausprobieren lernt. Wer nur **exploitiert** (die bisher beste Station immer wieder wählt), riskiert, sich auf eine
 schlechte Station festzulegen; wer nur **erkundet** (zufällig wählt), lernt zwar viel, nutzt es aber nie. Die Demo vergleicht fünf Verfahren: zufällig, gierig (kein Erkunden), Epsilon-gierig, **UCB1** (ein Vertrauensbonus für selten
 gezogene Stationen) und **Thompson Sampling** (eine Bayes'sche Stichprobe aus dem, was bisher gelernt wurde). Alle Daten sind erzeugt; die Rechnung ist in numpy geschrieben.
 """
 )
 st.caption(
-    "Erstes Stück (Wurzel A) der **Reinforcement-Learning-Linie** der \"Konzepte\"-Reihe: kein Zustand, die einfachste Form des Erkunden-gegen-Ausnutzen-Kompromisses. **Bezug zu OR:** dieselbe Frage stellt sich bei jeder wiederholten "
+    "Erstes Stück (Wurzel A) der **Reinforcement-Learning-Linie** der \"Konzepte\"-Reihe: kein State, die einfachste Form des Exploration-gegen-Exploitation-Kompromisses. **Bezug zu OR:** dieselbe Frage stellt sich bei jeder wiederholten "
     "Entscheidung unter unbekannter Verteilung (Preistests, A/B-Tests, Auswahl eines Lieferanten) - eine Vorstufe zu den Markov-Entscheidungsprozessen der Nachfolger."
 )
 
-with st.expander("So funktioniert Erkunden gegen Ausnutzen", expanded=True):
+with st.expander("So funktionieren Exploration und Exploitation", expanded=True):
     st.markdown(
         r"""
-1. **Das Problem.** $K$ Stationen, Station $k$ liefert mit unbekannter, fester Wahrscheinlichkeit $\theta_k$ eine kurze Ladezeit (Belohnung 1), sonst eine lange (Belohnung 0). Keine Station verändert sich, keine Runde beeinflusst eine spätere - nur die Reihenfolge der Ziehungen liegt in der Hand des Roboters.
+1. **Das Problem.** $K$ Stationen, Station $k$ liefert mit unbekannter, fester Wahrscheinlichkeit $\theta_k$ eine kurze Ladezeit (Reward 1), sonst eine lange (Reward 0). Keine Station verändert sich, keine Runde beeinflusst eine spätere - nur die Reihenfolge der Ziehungen liegt in der Hand des Roboters.
 2. **Das Regret.** Der Maßstab ist nicht der Ertrag selbst, sondern der entgangene: $\text{Regret} = \sum_t (\theta^* - \theta_{a_t})$, wobei $\theta^*$ die beste Station ist. Null Regret heißt: immer die beste Station gewählt.
-3. **Fünf Verfahren.** *Zufällig* und *Gierig* sind die beiden Extreme (nur Erkunden, nur Ausnutzen). *Epsilon-gierig* mischt: mit Wahrscheinlichkeit $\varepsilon$ zufällig, sonst die bisher beste. *UCB1* addiert auf den Mittelwert einen Vertrauensbonus $\sqrt{2\ln t / n_k}$, der für selten gezogene Stationen wächst. *Thompson Sampling* zieht aus einer Bayes'schen Verteilung (Beta) über jede Station und wählt die höchste Stichprobe.
+3. **Fünf Verfahren.** *Zufällig* und *Gierig* sind die beiden Extreme (nur Exploration, nur Exploitation). *Epsilon-gierig* mischt: mit Wahrscheinlichkeit $\varepsilon$ zufällig, sonst die bisher beste. *UCB1* addiert auf den Mittelwert einen Vertrauensbonus $\sqrt{2\ln t / n_k}$, der für selten gezogene Stationen wächst. *Thompson Sampling* zieht aus einer Bayes'schen Verteilung (Beta) über jede Station und wählt die höchste Stichprobe.
 4. **Der Vergleich** läuft als wachsendes Beispiel über die Runden; die drei Experimente darunter messen, wie das Regret mit der Zeit, mit der Erkundungsrate und mit der Schwierigkeit des Problems wächst.
         """
     )
@@ -91,7 +91,7 @@ with st.sidebar:
     spread = st.slider("Streuung der übrigen Stationen", *bounds("spread_slider"), key="spread_slider", step=C.SPREAD_STEP, format="%.2f", help="Wie unterschiedlich die K-1 übrigen Stationen sind.")
     st.markdown("**Der Lauf**")
     T = st.slider("Zahl der Runden", *bounds("t_slider"), key="t_slider", step=C.T_STEP, help="Wie viele Runden im wachsenden Beispiel und im Vergleich gespielt werden.")
-    eps = st.slider("Epsilon (für Epsilon-gierig)", *bounds("eps_slider"), key="eps_slider", step=C.EPS_STEP, format="%.2f", help="Erkundungsrate von Epsilon-gierig; 0 = Gierig, 1 = Zufällig.")
+    eps = st.slider("Epsilon (für Epsilon-gierig)", *bounds("eps_slider"), key="eps_slider", step=C.EPS_STEP, format="%.2f", help="Explorationsrate von Epsilon-gierig; 0 = Gierig, 1 = Zufällig.")
     seed = st.number_input("Zufalls-Seed", *bounds("seed_input"), key="seed_input", step=1, help="Legt die wahren Erfolgswahrscheinlichkeiten fest.")
     st.button("🎲 Neue Stationen generieren", width="stretch", on_click=randomize_seed)
 
@@ -182,7 +182,7 @@ if st.session_state.get("growth_on"):
     st.warning(
         f"**Befund:** Zufällig wächst mit Steigung {de(sl['random'], 2)} - fast exakt linear, wie die Theorie es für ein Verfahren ohne jedes Lernen vorhersagt. **UCB1 ({de(sl['ucb1'], 2)}) und Thompson Sampling ({de(sl['thompson'], 2)}) wachsen deutlich flacher als linear** - "
         f"näherungsweise logarithmisch, wie Auer, Cesa-Bianchi und Fischer (2002) es für UCB1 beweisen. Thompson Sampling liegt schon ab wenigen hundert Runden vorn und bleibt es (Chapelle & Li 2011: Thompson Sampling schlägt UCB1 in der Praxis oft). "
-        f"**Überraschung:** UCB1s eigene, spürbare Anfangs-Erkundung lässt Gierig (Steigung {de(sl['greedy'], 2)}, im Mittel) bis Runde {de(t10, 0)} sogar davonziehen ({de(cp['greedy'][t10][0], 0)} gegen {de(cp['ucb1'][t10][0], 0)}) - erst danach kehrt sich das um "
+        f"**Überraschung:** UCB1s eigene, spürbare Anfangs-Exploration lässt Gierig (Steigung {de(sl['greedy'], 2)}, im Mittel) bis Runde {de(t10, 0)} sogar davonziehen ({de(cp['greedy'][t10][0], 0)} gegen {de(cp['ucb1'][t10][0], 0)}) - erst danach kehrt sich das um "
         f"({de(cp['greedy'][t15][0], 0)} gegen {de(cp['ucb1'][t15][0], 0)} bei Runde {de(t15, 0)}), weil Gierigs Mittelwert eine riesige Streuung verdeckt (manche Läufe legen sich sofort auf die beste Station fest, andere für immer auf eine schlechte - das nächste Experiment zeigt das direkt). "
         f"Epsilon-gierig ({de(sl['epsilon_greedy'], 2)}) bleibt asymptotisch linear, aber mit kleinerer Steigung und ohne Gierigs Anfangsvorteil zu brauchen."
     )
@@ -190,8 +190,8 @@ if st.session_state.get("growth_on"):
 st.markdown("---")
 
 st.subheader("🔬 Wie stark soll man erkunden?")
-st.caption(f"Derselbe Bandit, {C.EXP_T} Runden, {len(C.EXP_SEEDS_EPS)} feste Seeds. Epsilon-gierig über mehrere Erkundungsraten (0 = Gierig, 1 = Zufällig); zusätzlich der Anteil der Läufe, die in den letzten {window_pct} % der Runden die beste Station in weniger als 10 % der Fälle ziehen (\"hängen geblieben\"). Dauer etwa eine Minute.")
-if st.button("Erkundungsraten durchrechnen", key="eps_start"):
+st.caption(f"Derselbe Bandit, {C.EXP_T} Runden, {len(C.EXP_SEEDS_EPS)} feste Seeds. Epsilon-gierig über mehrere Explorationsraten (0 = Gierig, 1 = Zufällig); zusätzlich der Anteil der Läufe, die in den letzten {window_pct} % der Runden die beste Station in weniger als 10 % der Fälle ziehen (\"hängen geblieben\"). Dauer etwa eine Minute.")
+if st.button("Explorationsraten durchrechnen", key="eps_start"):
     st.session_state["eps_on"] = True
 if st.session_state.get("eps_on"):
     re_ = _epsilon(C.EXP_EPS_LEVELS, C.EXP_SEEDS_EPS)
@@ -227,21 +227,21 @@ st.markdown(
 | Annahme | Was passiert, wenn sie verletzt ist | Wer setzt an |
 |---|---|---|
 | **Die Erfolgswahrscheinlichkeit ist fest** | Ändert sich eine Station mit der Zeit (Abnutzung, Tageszeit), lernen alle fünf Verfahren einen veralteten Wert; UCB1/Thompson haben kein Vergessen eingebaut. | Gleitendes Fenster, diskontierte Zähler, gleitender UCB |
-| **Keine Folgen für künftige Runden** | Sobald eine Wahl den Zustand verändert (z. B. wie viele Aufträge als Nächstes anstehen), ist es kein Bandit mehr, sondern ein Markov-Entscheidungsprozess - der nächste Schritt dieser Linie. | Wert- und Politikiteration (Stück 2) |
+| **Keine Folgen für künftige Runden** | Sobald eine Wahl den State verändert (z. B. wie viele Aufträge als Nächstes anstehen), ist es kein Bandit mehr, sondern ein Markov-Entscheidungsprozess - der nächste Schritt dieser Linie. | Value Iteration und Policy Iteration (Stück 2) |
 | **Ein Entscheider, keine Gegenspieler** | Bei mehreren Lkw, die sich gegenseitig beeinflussen (dasselbe Tor, dieselbe Ressource), ist die Umgebung nicht mehr stationär - das ist die Situation von `noregret-demo` (Spieltheorie-Linie), nicht diese hier. | Adversariales Online-Lernen (Hedge/EXP3) |
-| **Bernoulli-Belohnung (0 oder 1)** | Bei kontinuierlichen Belohnungen (z. B. echte Ladezeit in Minuten) ändert sich UCB1s Bonusformel und Thompson Samplings Beta-Verteilung passt nicht mehr direkt. | Gauß'sches UCB, Gauß'sche Thompson-Variante |
+| **Bernoulli-Reward (0 oder 1)** | Bei kontinuierlichen Rewards (z. B. echte Ladezeit in Minuten) ändert sich UCB1s Bonusformel und Thompson Samplings Beta-Verteilung passt nicht mehr direkt. | Gauß'sches UCB, Gauß'sche Thompson-Variante |
 | **Gierig hat kein Sicherheitsnetz** | Ein einzelner unglücklicher erster Zug kann eine schlechte Station für immer festschreiben - kein Verfahren dieser Demo erkennt das im Nachhinein. | Erkundung mit abklingendem Epsilon, optimistische Startwerte |
 | **Erzeugte Stationen, feste Seeds** | Die Zahlen gelten für dieses Vehikel; reale Auswahlprobleme haben oft mehr Stationen mit ähnlicheren Werten (kleinerer Abstand) als hier gezeigt. | - |
 """
 )
-st.caption("Die Linie: Bandit (dieses Stück) → Wert- und Politikiteration → Q-Learning → SARSA / Dyna-Q / Funktionsapproximation (DQN) / Policy Gradient → Actor-Critic.")
+st.caption("Die Linie: Bandit (dieses Stück) → Value Iteration und Policy Iteration → Q-Learning → SARSA / Dyna-Q / Funktionsapproximation (DQN) / Policy Gradient → Actor-Critic.")
 
 st.markdown("---")
 
 with st.expander("📐 Mathematische Formulierung"):
     st.markdown(
         r"""
-**Das Problem.** $K$ Stationen mit fester, unbekannter Erfolgswahrscheinlichkeit $\theta_k \in (0,1)$. In Runde $t$ wird Station $a_t$ gezogen, die Belohnung $r_t \sim \text{Bernoulli}(\theta_{a_t})$ beobachtet. $n_k(t)$ = Zahl der Ziehungen von Station $k$ bis Runde $t$, $\hat\theta_k(t) = \frac{1}{n_k(t)}\sum r$ ihr Mittelwert.
+**Das Problem.** $K$ Stationen mit fester, unbekannter Erfolgswahrscheinlichkeit $\theta_k \in (0,1)$. In Runde $t$ wird Station $a_t$ gezogen, der Reward $r_t \sim \text{Bernoulli}(\theta_{a_t})$ beobachtet. $n_k(t)$ = Zahl der Ziehungen von Station $k$ bis Runde $t$, $\hat\theta_k(t) = \frac{1}{n_k(t)}\sum r$ ihr Mittelwert.
 
 **Regret.** $R(T) = \sum_{t=1}^T (\theta^* - \theta_{a_t})$ mit $\theta^* = \max_k \theta_k$ (Auer, Cesa-Bianchi & Fischer 2002) - der Erwartungswert des entgangenen Ertrags, nicht der verrauschte tatsächliche.
 
