@@ -1,5 +1,7 @@
 # 🎰 Bandit – Erkunden gegen Ausnutzen
 
+**[→ Demo live ausprobieren](https://sebastianhanisch-bandit-demo.streamlit.app/)**
+
 Erstes Stück (Wurzel A) der **Reinforcement-Learning-Linie** der "Konzepte"-Reihe im Portfolio von [Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning. Ein Lagerroboter muss sich in jeder Runde für eine von **K Ladestationen** mit unbekannter, aber fester Erfolgswahrscheinlichkeit entscheiden – der einfachste Fall von Reinforcement Learning: kein Zustand, keine Übergänge, nur die Frage, wie man aus wiederholtem Ausprobieren lernt. Fünf Verfahren im Vergleich: zufällig, gierig, Epsilon-gierig, **UCB1** und **Thompson Sampling**.
 
 ## Kernfrage
