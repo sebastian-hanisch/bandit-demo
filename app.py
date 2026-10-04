@@ -181,7 +181,7 @@ if st.session_state.get("growth_on"):
     t10, t15 = C.EXP_CHECKPOINTS[-3], C.EXP_CHECKPOINTS[-2]
     st.warning(
         f"**Befund:** Zufällig wächst mit Steigung {de(sl['random'], 2)} - fast exakt linear, wie die Theorie es für ein Verfahren ohne jedes Lernen vorhersagt. **UCB1 ({de(sl['ucb1'], 2)}) und Thompson Sampling ({de(sl['thompson'], 2)}) wachsen deutlich flacher als linear** - "
-        f"näherungsweise logarithmisch, wie Auer, Cesa-Bianchi und Fischer (2002) es für UCB1 beweisen. Thompson Sampling liegt schon ab wenigen hundert Runden vorn und bleibt es (Chapelle & Li 2011: Thompson Sampling schlägt UCB1 in der Praxis oft). "
+        f"näherungsweise logarithmisch, wie Auer, Cesa-Bianchi und Fischer (2002) es für UCB1 beweisen. Thompson Sampling liegt ab etwa tausend Runden vorn und bleibt es (Chapelle & Li 2011: Thompson Sampling schlägt UCB1 in der Praxis oft). "
         f"**Überraschung:** UCB1s eigene, spürbare Anfangs-Exploration lässt Gierig (Steigung {de(sl['greedy'], 2)}, im Mittel) bis Runde {de(t10, 0)} sogar davonziehen ({de(cp['greedy'][t10][0], 0)} gegen {de(cp['ucb1'][t10][0], 0)}) - erst danach kehrt sich das um "
         f"({de(cp['greedy'][t15][0], 0)} gegen {de(cp['ucb1'][t15][0], 0)} bei Runde {de(t15, 0)}), weil Gierigs Mittelwert eine riesige Streuung verdeckt (manche Läufe legen sich sofort auf die beste Station fest, andere für immer auf eine schlechte - das nächste Experiment zeigt das direkt). "
         f"Epsilon-gierig ({de(sl['epsilon_greedy'], 2)}) bleibt asymptotisch linear, aber mit kleinerer Steigung und ohne Gierigs Anfangsvorteil zu brauchen."
@@ -213,8 +213,8 @@ if st.session_state.get("gap_on"):
     st.plotly_chart(build_gap(rgap), width="stretch", key="gap_chart")
     g0, g1 = C.EXP_GAP_LEVELS[0], C.EXP_GAP_LEVELS[-1]
     st.warning(
-        f"**Befund:** Bei Abstand {de(g0, 2)} (schwer zu unterscheiden) liegt UCB1 bei {de(rgap['rows'][(g0, 'ucb1')][0], 0)} Regret, bei Abstand {de(g1, 2)} (leicht) nur bei {de(rgap['rows'][(g1, 'ucb1')][0], 0)} - genau wie die theoretische Schranke von Auer et al. (2002) es vorhersagt: "
-        f"das Regret wächst näherungsweise mit 1/Abstand. Thompson Sampling zeigt dasselbe Muster ({de(rgap['rows'][(g0, 'thompson')][0], 0)} gegen {de(rgap['rows'][(g1, 'thompson')][0], 0)}) und bleibt bei jedem Abstand deutlich unter UCB1."
+        f"**Befund:** Bei Abstand {de(g0, 2)} (schwer zu unterscheiden) liegt UCB1 bei {de(rgap['rows'][(g0, 'ucb1')][0], 0)} Regret, bei Abstand {de(g1, 2)} (leicht) nur bei {de(rgap['rows'][(g1, 'ucb1')][0], 0)} - die Richtung stimmt mit der Schranke von Auer et al. (2002) überein (Regret ∝ 1/Abstand). "
+        f"Das Skalengesetz selbst gilt aber nur asymptotisch: bei {C.EXP_T} Runden steigt das Regret von UCB1 beim {de(g1 / g0, 0)}-fach kleineren Abstand nur um den Faktor {de(rgap['rows'][(g0, 'ucb1')][0] / rgap['rows'][(g1, 'ucb1')][0], 1)}, nicht um {de(g1 / g0, 0)}. Thompson Sampling zeigt dasselbe Muster ({de(rgap['rows'][(g0, 'thompson')][0], 0)} gegen {de(rgap['rows'][(g1, 'thompson')][0], 0)}) und bleibt bei jedem Abstand deutlich unter UCB1."
     )
 
 st.markdown("---")
@@ -257,6 +257,6 @@ Implementiert in `bd_bandit.py` (das Vehikel), `bd_algorithms.py` (alle fünf Ve
 st.markdown("---")
 st.caption(
     "Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – "
-    "Operations Research und Machine Learning. Interesse an einer maßgeschneiderten Lösung für "
-    "Ihr Unternehmen? [Kontakt aufnehmen](https://sebastianhanisch.net/kontakt.html)"
+    "Operations Research und Machine Learning ([Über mich](https://sebastianhanisch.net/ueber-mich.html)). "
+    "Mehr zur Reihe: [Reinforcement Learning: Bandit bis Actor-Critic](https://sebastianhanisch.net/konzepte-reinforcement-learning.html)."
 )
