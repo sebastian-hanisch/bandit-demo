@@ -34,11 +34,14 @@ class Bandit:
 
 def generate(K=10, base=0.5, gap=0.1, spread=0.05, seed=0):
     """K Stationen: die anderen K-1 um `base` gestreut (Standardabweichung `spread`), die beste genau `gap` über deren Maximum -
-    das erzeugt den gewünschten Abstand unabhängig von der Streuung. Alle Werte auf [0.02, 0.98] geklemmt."""
+    das erzeugt den gewünschten Abstand unabhängig von der Streuung. Alle Werte auf [0.02, 0.98] geklemmt; reicht der Platz unter 0.98 nicht, werden alle Stationen gemeinsam nach unten geschoben (der Abstand bleibt exakt)."""
     rng = np.random.default_rng(seed)
     theta = np.clip(base + spread * rng.normal(size=K), 0.02, 0.98)
     best = int(rng.integers(K))
     others_max = np.delete(theta, best).max() if K > 1 else 0.0
+    if K > 1 and others_max + gap > 0.98:                                   # kein Platz über dem Maximum der übrigen: alle Stationen gemeinsam nach unten schieben, damit der Abstand exakt bleibt
+        theta = np.clip(theta - (others_max + gap - 0.98), 0.02, 0.98)
+        others_max = np.delete(theta, best).max()
     theta[best] = float(np.clip(others_max + gap, 0.02, 0.98))
     return Bandit(theta, int(seed))
 
